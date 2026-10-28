@@ -1,0 +1,67 @@
+---
+layout: runbook
+title: '#4471 holds three problems, not one'
+owner: Robert Walkowski
+status: proposed
+reviewed: 2026-10-28
+signature: v1.eyJzdWIiOiIyMTg5IiwiYXVkIjoiY2hhbGxlbmdlOndoYXQtaXQtc2hvd3MiLCJpYXQiOjE3OTMxNzM4NDYsImV4cCI6MTc5MzI2MDI0Nn0.Ac__TW05V77OGRigS-7BGAYjr7IGOzqajjBEHHRdGq8
+---
+
+<script>
+  import ProblemSplit from '#lib/kb/ProblemSplit.svelte';
+  import Callout from '#lib/kb/Callout.svelte';
+  import RenderStamp from '#lib/kb/RenderStamp.svelte';
+
+  const REPO = 'https://github.com/robertwalkowski-prog/what-it-shows/issues';
+  const problems = [
+    { key: 'parser', label: 'Parser reads day-first dates month first', issue: `${REPO}/1` },
+    { key: 'hint', label: 'booking-v3 form hints MM/DD, reads DD/MM', issue: `${REPO}/2` },
+    { key: 'one-day', label: 'Bookings move by one day across time zones', issue: `${REPO}/3` },
+  ];
+</script>
+
+[#4471](/kb/incidents/4471) is marked known: one issue, one fix queued. The reports merged into it
+describe three different bugs. The queued parser fix closes only the first one. The other two have
+no ticket, so they would stay broken after #4471 ships, and nobody would be looking.
+
+<Callout kind="warn">
+Do not close #4471's reports when the parser fix ships. Move them to the ticket of the problem they belong to first.
+</Callout>
+
+## The split
+
+<ProblemSplit ticket={4471} {problems} />
+
+Counted from the ticket system's export at render time, one report per id. When the desk merges more
+reports, the numbers here move with it.
+
+## How each report is placed
+
+1. **Parser.** A day-first tenant reports through `app` or `email`, or through a `booking-v2`
+   form (hint `DD/MM/YYYY`). The shared parser reads month first, so day and month swap.
+2. **Form hint.** A tenant on `booking-v3` reports through `form`. That form prints
+   `MM/DD/YYYY` under the date field and reads the answer day first. People type what the hint
+   says. A parser fix does not change the form.
+3. **One-day move.** The desk already listed five reports in `desk-notes.json` as a one-day move:
+   the date shifts by a day and depends on where the reader is ("Lisbon got Tuesday, Toronto got
+   Monday"). That is time zone handling, not a swap. The #4471 page counts them under parser and
+   footnotes them; here they have their own row.
+
+The cause comes from the tenant (locale and booking form), as `causes.ts` says. The intake tag is a
+guess from the reporter's browser and disagrees with the tenant on dozens of these reports, so it is
+shown only for comparison.
+
+## Why they were merged
+
+[Decision 0001](/kb/decisions/0001-dedupe-by-subject) merges on subject line. "Wrong date",
+"Booking on the wrong date" and "Month and day swapped?" fit all three bugs, so all three landed in
+one ticket. The decision accepted that cost for different subjects about one bug; it did not cover
+one subject about different bugs. That needs a new decision record, not an edit to 0001.
+
+## What the desk does now
+
+- Keep #4471 for the parser problem only.
+- Route `form` reports from `booking-v3` tenants to the form ticket.
+- Route one-day shifts to the time zone ticket. Ask the reporter where each attendee is.
+
+<RenderStamp {signature} />

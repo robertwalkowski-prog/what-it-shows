@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="../../_app/immutable/entry/start.DrhF0aCF.js" rel="modulepreload">
+		<link href="../../_app/immutable/chunks/fruYDLqp.js" rel="modulepreload">
+		<link href="../../_app/immutable/chunks/D8bMN_BA.js" rel="modulepreload">
+		<link href="../../_app/immutable/chunks/Cbdj2qAo.js" rel="modulepreload">
+		<link href="../../_app/immutable/entry/app.CZfA3EdY.js" rel="modulepreload">
+		<link href="../../_app/immutable/chunks/BkYfdh9H.js" rel="modulepreload">
+		<link href="../../_app/immutable/chunks/BD3UdjSR.js" rel="modulepreload">
+		<link href="../../_app/immutable/chunks/wnmzq4eU.js" rel="modulepreload">
+		<link href="../../_app/immutable/chunks/TGQFHf5e.js" rel="modulepreload">
+		<link href="../../_app/immutable/nodes/0.CCpBT1ka.js" rel="modulepreload">
+		<link href="../../_app/immutable/chunks/ybC49tkz.js" rel="modulepreload">
+		<link href="../../_app/immutable/nodes/5.tG7W_XE7.js" rel="modulepreload">
+		<link href="../../_app/immutable/chunks/Cs_hnuPM.js" rel="modulepreload">
+		<link href="../../_app/immutable/chunks/DFPV7QJw.js" rel="modulepreload">
+		<link href="../../_app/immutable/chunks/M7cEM8C8.js" rel="modulepreload">
+		<link href="../../_app/immutable/chunks/iXLSwIXB.js" rel="modulepreload">
+		<!--e2jw2j--><!----><title>#4471 holds three problems, not one · support kb</title>
+		<link href="../../_app/immutable/assets/runbook.BhhgOc_n.css" rel="stylesheet">
+		<link href="../../_app/immutable/assets/Callout.yLErXQDM.css" rel="stylesheet">
+		<link href="../../_app/immutable/assets/5.4-pyzOF9.css" rel="stylesheet">
+  </head>
+  <body data-sveltekit-preload-data="hover">
+    <div style="display: contents"><!--[--><!--[0--><!--[--><!--[--><div class="kb svelte-e2jw2j"><header><a class="crumb svelte-e2jw2j" href="/kb">support desk · kb</a> <h1 class="svelte-e2jw2j">#4471 holds three problems, not one</h1> <p class="meta svelte-e2jw2j"><span>owner <b>Robert Walkowski</b></span> <span class="status proposed svelte-e2jw2j">proposed</span> <span class="svelte-e2jw2j">reviewed 2026-10-28 · 0 days ago</span></p></header> <!--[-1--><!--]--> <main><p><a href="/kb/incidents/4471">#4471</a> is marked known: one issue, one fix queued. The reports merged into it
+describe three different bugs. The queued parser fix closes only the first one. The other two have
+no ticket, so they would stay broken after #4471 ships, and nobody would be looking.</p> <aside class="warn svelte-17bri61"><!---->Do not close #4471's reports when the parser fix ships. Move them to the ticket of the problem they belong to first.<!----></aside><!----> <h2>The split</h2> <p class="sum svelte-h3x27m"><strong>412</strong> reports merged into #4471 · <strong>3</strong> problems ·
+  every report placed</p> <table><thead><tr><th>problem</th><th>reports</th><th>tenants</th><th>channels</th><th>intake tagged</th><th>seen</th><th>ticket</th></tr></thead><tbody><!--[--><tr><td>Parser reads day-first dates month first</td><td><strong>374</strong></td><td>11</td><td class="small svelte-h3x27m">app ×202 · email ×147 · form ×25</td><td class="small svelte-h3x27m">parser ×351 · hint ×23</td><td class="small svelte-h3x27m">2026-04-01 → 2026-10-04</td><td><a href="https://github.com/robertwalkowski-prog/what-it-shows/issues/1">#1</a></td></tr><tr><td>booking-v3 form hints MM/DD, reads DD/MM</td><td><strong>33</strong></td><td>3</td><td class="small svelte-h3x27m">form ×33</td><td class="small svelte-h3x27m">hint ×18 · parser ×15</td><td class="small svelte-h3x27m">2026-04-17 → 2026-09-22</td><td><a href="https://github.com/robertwalkowski-prog/what-it-shows/issues/2">#2</a></td></tr><tr><td>Bookings move by one day across time zones</td><td><strong>5</strong></td><td>5</td><td class="small svelte-h3x27m">email ×3 · app ×2</td><td class="small svelte-h3x27m">parser ×5</td><td class="small svelte-h3x27m">2026-04-02 → 2026-10-04</td><td><a href="https://github.com/robertwalkowski-prog/what-it-shows/issues/3">#3</a></td></tr><!--]--></tbody></table><!----> <p>Counted from the ticket system’s export at render time, one report per id. When the desk merges more
+reports, the numbers here move with it.</p> <h2>How each report is placed</h2> <ol><li><strong>Parser.</strong> A day-first tenant reports through <code>app</code> or <code>email</code>, or through a <code>booking-v2</code> form (hint <code>DD/MM/YYYY</code>). The shared parser reads month first, so day and month swap.</li> <li><strong>Form hint.</strong> A tenant on <code>booking-v3</code> reports through <code>form</code>. That form prints <code>MM/DD/YYYY</code> under the date field and reads the answer day first. People type what the hint
+says. A parser fix does not change the form.</li> <li><strong>One-day move.</strong> The desk already listed five reports in <code>desk-notes.json</code> as a one-day move:
+the date shifts by a day and depends on where the reader is (“Lisbon got Tuesday, Toronto got
+Monday”). That is time zone handling, not a swap. The #4471 page counts them under parser and
+footnotes them; here they have their own row.</li></ol> <p>The cause comes from the tenant (locale and booking form), as <code>causes.ts</code> says. The intake tag is a
+guess from the reporter’s browser and disagrees with the tenant on dozens of these reports, so it is
+shown only for comparison.</p> <h2>Why they were merged</h2> <p><a href="/kb/decisions/0001-dedupe-by-subject">Decision 0001</a> merges on subject line. “Wrong date”,
+“Booking on the wrong date” and “Month and day swapped?” fit all three bugs, so all three landed in
+one ticket. The decision accepted that cost for different subjects about one bug; it did not cover
+one subject about different bugs. That needs a new decision record, not an edit to 0001.</p> <h2>What the desk does now</h2> <ul><li>Keep #4471 for the parser problem only.</li> <li>Route <code>form</code> reports from <code>booking-v3</code> tenants to the form ticket.</li> <li>Route one-day shifts to the time zone ticket. Ask the reporter where each attendee is.</li></ul> <!--[0--><p class="stamp svelte-1280m42">desk ref <b class="svelte-1280m42">DR-N4WT-PGXF</b></p><!--]--><!----><!----></main> <footer class="svelte-e2jw2j">Pages are written by people. Tables and charts are built from data at render time.</footer></div><!--]--><!----><!--]--><!--]--> <!--[-1--><!--]--><!--]-->
+			
+			<script>
+				{
+					__sveltekit_719ir = {
+						base: new URL("../..", location).pathname.slice(0, -1)
+					};
+
+					const element = document.currentScript.parentElement;
+
+					Promise.all([
+						import("../../_app/immutable/entry/start.DrhF0aCF.js"),
+						import("../../_app/immutable/entry/app.CZfA3EdY.js")
+					]).then(([kit, app]) => {
+						kit.start(app, element, {
+							node_ids: [0, 5],
+							data: [null,null],
+							form: null,
+							error: null
+						});
+					});
+				}
+			</script>
+		</div>
+  </body>
+</html>
