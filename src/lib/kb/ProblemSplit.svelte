@@ -4,18 +4,17 @@
   import { groupByCause, uniqueById, type Report } from '#lib/kb/causes';
   import { tenantOf } from '#lib/kb/locales';
 
-  // One row per problem the ticket really holds. causes.ts tells `parser` from `hint`; the reports
-  // the desk read as a one-day move (desk-notes.json) are a third problem, so they get their own row
-  // instead of a footnote under `parser`.
+  // One row per problem the ticket really holds, counted the desk's way: causes.ts files every report
+  // by tenant into `parser` or `hint`. The reports the desk read as a one-day move (desk-notes.json)
+  // stay counted where they are filed, and also get a row of their own, since they are a third problem.
   type Problem = { key: string; label: string; issue: string };
   let { ticket, problems }: { ticket: number; problems: Problem[] } = $props();
 
   const merged = $derived(uniqueById(reports as Report[]).filter((r) => r.mergedInto === ticket));
   const shifted = $derived(merged.filter((r) => notes.oneDayMove.includes(r.id)));
-  const rest = $derived(merged.filter((r) => !notes.oneDayMove.includes(r.id)));
 
   const rows = $derived.by(() => {
-    const byKey = new Map<string, Report[]>(groupByCause(rest, tenantOf).map((g) => [g.cause, g.reports]));
+    const byKey = new Map<string, Report[]>(groupByCause(merged, tenantOf).map((g) => [g.cause, g.reports]));
     byKey.set('one-day', shifted);
     return problems.map((p) => {
       const rs = byKey.get(p.key) ?? [];
@@ -28,12 +27,13 @@
       return { ...p, n: rs.length, tenants: new Set(rs.map((r) => r.tenant)).size, channels: count((r) => r.channel), tagged: count((r) => r.meta.intakeTag), seen: rs.length ? `${days[0]} → ${days[days.length - 1]}` : '—' };
     });
   });
-  const placed = $derived(rows.reduce((n, r) => n + r.n, 0));
+  const filed = $derived(rows.filter((r) => r.key !== 'one-day').reduce((n, r) => n + r.n, 0));
 </script>
 
 <p class="sum">
   <strong>{merged.length}</strong> reports merged into #{ticket} · <strong>{rows.length}</strong> problems ·
-  {placed === merged.length ? 'every report placed' : `${merged.length - placed} not placed`}
+  {filed === merged.length ? 'every report filed' : `${merged.length - filed} not filed`} ·
+  {shifted.length} of them also read as a one-day move
 </p>
 
 <table>

@@ -32,8 +32,10 @@ Do not close #4471's reports when the parser fix ships. Move them to the ticket 
 
 <ProblemSplit ticket={4471} {problems} />
 
-Counted from the ticket system's export at render time, one report per id. When the desk merges more
-reports, the numbers here move with it.
+Counted from the ticket system's export at render time, one report per id, the way the desk's own
+view counts them: every report is filed by tenant under parser or form hint. The one-day moves stay
+in the parser count and have their own ticket too. When the desk merges more reports, the numbers
+here move with it.
 
 ## How each report is placed
 
@@ -44,8 +46,8 @@ reports, the numbers here move with it.
    says. A parser fix does not change the form.
 3. **One-day move.** The desk already listed five reports in `desk-notes.json` as a one-day move:
    the date shifts by a day and depends on where the reader is ("Lisbon got Tuesday, Toronto got
-   Monday"). That is time zone handling, not a swap. The #4471 page counts them under parser and
-   footnotes them; here they have their own row.
+   Monday"). That is time zone handling, not a swap. The desk files them under parser by tenant and
+   footnotes them; here they also have their own row and ticket.
 
 The cause comes from the tenant (locale and booking form), as `causes.ts` says. The intake tag is a
 guess from the reporter's browser and disagrees with the tenant on dozens of these reports, so it is
