@@ -2,7 +2,7 @@
 layout: runbook
 title: '#4471 holds three problems, not one'
 owner: Robert Walkowski
-status: proposed
+status: accepted
 reviewed: 2026-10-28
 signature: v1.eyJzdWIiOiIyMTg5IiwiYXVkIjoiY2hhbGxlbmdlOndoYXQtaXQtc2hvd3MiLCJpYXQiOjE3OTMxNzM4NDYsImV4cCI6MTc5MzI2MDI0Nn0.Ac__TW05V77OGRigS-7BGAYjr7IGOzqajjBEHHRdGq8
 ---
@@ -20,12 +20,18 @@ signature: v1.eyJzdWIiOiIyMTg5IiwiYXVkIjoiY2hhbGxlbmdlOndoYXQtaXQtc2hvd3MiLCJpYX
   ];
 </script>
 
-[#4471](/kb/incidents/4471) is marked known: one issue, one fix queued. The reports merged into it
-describe three different bugs. The queued parser fix closes only the first one. The other two have
-no ticket, so they would stay broken after #4471 ships, and nobody would be looking.
+[#4471](/kb/incidents/4471) was marked known: one issue, one fix queued. The reports merged into it
+describe three different bugs. Engineering closed #4471 on 5 October:
+
+| problem | outcome |
+|---|---|
+| parser | fixed: `fix(dates): parse dd/mm for eu locales` |
+| form hint | won't fix: the `booking-v3` form is retired |
+| one-day move | **still open**: neither change touches it |
 
 <Callout kind="warn">
-Do not close #4471's reports when the parser fix ships. Move them to the ticket of the problem they belong to first.
+Closing #4471 did not close the one-day move. Those reports were filed under parser, so they look
+fixed. They are not: route them to the time zone ticket.
 </Callout>
 
 ## The split
@@ -62,8 +68,8 @@ one subject about different bugs. That needs a new decision record, not an edit 
 
 ## What the desk does now
 
-- Keep #4471 for the parser problem only.
-- Route `form` reports from `booking-v3` tenants to the form ticket.
+- New day/month swaps after 5 October: a regression of the parser fix. Open a new ticket.
+- `booking-v3` is retired: a form hint report means a tenant still runs it. Move them to a supported form.
 - Route one-day shifts to the time zone ticket. Ask the reporter where each attendee is.
 
 <RenderStamp {signature} />
